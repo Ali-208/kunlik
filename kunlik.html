@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI Assistant | Premium Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: var(--bg-gradient); 
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-main);
+            padding: 20px 0 50px;
+        }
+
+        .app-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { 
+            font-size: 2.5rem; font-weight: 800; 
+            background: linear-gradient(to right, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1.5px;
+        }
+        .header p { color: var(--text-muted); font-size: 1rem; margin-top: 5px; }
+
+        /* Navigation */
+        .nav-bar { 
+            display: flex; gap: 8px; justify-content: center; 
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            padding: 10px; border-radius: 30px; border: 1px solid white;
+            box-shadow: var(--card-shadow); margin-bottom: 30px;
+            position: sticky; top: 20px; z-index: 100;
+        }
+        .nav-link { 
+            padding: 12px 22px; border: none; background: none; 
+            border-radius: 20px; font-size: 14px; font-weight: 700; 
+            color: var(--text-muted); cursor: pointer; transition: 0.3s;
+        }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 8px 15px var(--primary-light); }
+
+        /* Panels */
+        .panel { display: none; animation: slideUp 0.4s ease-out; }
+        .panel.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards */
+        .card { 
+            background: var(--glass-bg); border-radius: var(--radius-xl); 
+            padding: 25px; border: 1px solid white;
+            box-shadow: var(--card-shadow); margin-bottom: 20px;
+        }
+        .card-header { font-size: 14px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+
+        /* Form Elements */
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        input, select, textarea { 
+            width: 100%; padding: 14px 18px; border-radius: 14px; 
+            border: 1.5px solid #e2e8f0; font-size: 14px; outline: none;
+            transition: 0.3s; background: rgba(248, 250, 252, 0.8);
+        }
+        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px var(--primary-light); }
+        
+        .btn { 
+            padding: 14px 24px; border-radius: 14px; border: none; 
+            font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 14px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary-light); }
+        .btn-ai { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; width: 100%; }
+        .btn-del { padding: 8px; background: #fee2e2; color: #ef4444; border-radius: 10px; }
+
+        /* Lists */
+        .list-item { 
+            background: white; margin-bottom: 10px; padding: 16px; 
+            border-radius: var(--radius-lg); border: 1px solid #f1f5f9;
+            display: flex; align-items: center; justify-content: space-between;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-item { background: white; padding: 20px; border-radius: var(--radius-lg); text-align: center; border: 1px solid white; box-shadow: var(--card-shadow); }
+        .stat-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .stat-value { font-size: 1.5rem; font-weight: 800; margin-top: 5px; }
+
+        /* Timer */
+        .timer-display { font-size: 5rem; font-weight: 800; text-align: center; padding: 20px 0; color: var(--text-main); font-variant-numeric: tabular-nums; }
+        
+        /* Chat */
+        .chat-area { height: 350px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+        .msg { max-width: 80%; padding: 14px 18px; border-radius: 20px; font-size: 14px; line-height: 1.5; }
+        .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
+
+        .empty { text-align: center; color: var(--text-muted); padding: 30px; font-style: italic; }
+        .ai-box { margin-top: 15px; padding: 15px; background: #f5f3ff; border-radius: 14px; border-left: 4px solid #8b5cf6; font-size: 14px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>Smart Assistant</h1>
+        <p>Barchasi bir joyda: Unumdorlik va tahlil</p>
+    </div>
+
+    <nav class="nav-bar">
+        <button class="nav-link active" onclick="showTab('todo', this)">Vazifalar</button>
+        <button class="nav-link" onclick="showTab('budget', this)">Byudjet</button>
+        <button class="nav-link" onclick="showTab('timer', this)">Timer</button>
+        <button class="nav-link" onclick="showTab('notes', this)">Eslatma</button>
+        <button class="nav-link" onclick="showTab('chat', this)">AI Chat</button>
+    </nav>
+
+    <div id="panel-todo" class="panel active">
+        <div class="card">
+            <div class="card-header">Yangi vazifa</div>
+            <div class="input-row">
+                <input type="text" id="todo-inp" placeholder="Bugun nima qilamiz?">
+                <select id="todo-pri" style="width: 140px;">
+                    <option value="high">🔴 Muhim</option>
+                    <option value="mid" selected>🟡 O'rta</option>
+                    <option value="low">🟢 Oddiy</option>
+                </select>
+                <button class="btn btn-main" onclick="addTodo()">Qo'shish</button>
+            </div>
+            <button class="btn btn-ai" onclick="aiAction('todo')">✨ AI bilan reja tuzish</button>
+            <div id="ai-todo-box"></div>
+        </div>
+        <div id="todo-list"></div>
+    </div>
+
+    <div id="panel-budget" class="panel">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Kirim</div>
+                <div class="stat-value" id="s-in" style="color: var(--success);">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Chiqim</div>
+                <div class="stat-value" id="s-out" style="color: var(--danger);">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Qoldiq</div>
+                <div class="stat-value" id="s-bal">0</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Moliyaviy operatsiya</div>
+            <div class="input-row">
+                <input type="text" id="tr-name" placeholder="Xarajat nomi">
+                <input type="number" id="tr-amt" placeholder="Summa">
+                <select id="tr-type" style="width: 120px;">
+                    <option value="income">Kirim</option>
+                    <option value="expense" selected>Chiqim</option>
+                </select>
+                <button class="btn btn-main" onclick="addTrans()">Saqlash</button>
+            </div>
+            <button class="btn btn-ai" onclick="aiAction('budget')">📊 AI xarajat tahlili</button>
+            <div id="ai-budget-box"></div>
+        </div>
+        <div id="trans-list"></div>
+    </div>
+
+    <div id="panel-timer" class="panel">
+        <div class="card">
+            <div class="card-header">Fokus Taymer</div>
+            <div class="timer-display" id="t-disp">25:00</div>
+            <div class="input-row" style="justify-content: center; gap: 20px;">
+                <div style="text-align: center;">
+                    <small style="color: var(--text-muted);">Daqiqa</small>
+                    <input type="number" id="t-min" value="25" min="0" max="99" style="width: 80px; font-size: 1.5rem; text-align: center;">
+                </div>
+                <div style="text-align: center;">
+                    <small style="color: var(--text-muted);">Soniya</small>
+                    <input type="number" id="t-sec" value="0" min="0" max="59" style="width: 80px; font-size: 1.5rem; text-align: center;">
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-main" style="flex:1" onclick="tStart()">▶ Boshlash</button>
+                <button class="btn" style="flex:1; background: #e2e8f0;" onclick="tPause()">⏸ To'xtatish</button>
+                <button class="btn" style="flex:0.5; background: #cbd5e1;" onclick="tReset()">↺</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="panel-notes" class="panel">
+        <div class="card">
+            <div class="card-header">Yangi eslatma</div>
+            <textarea id="note-inp" placeholder="Fikrlaringizni shu yerga yozing..." style="height: 120px; resize: none;"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-ai" style="width: auto;" onclick="aiAction('note')">✨ AI Xulosa</button>
+                <button class="btn btn-main" onclick="addNote()">Saqlash</button>
+            </div>
+            <div id="ai-note-box"></div>
+        </div>
+        <div id="notes-list"></div>
+    </div>
+
+    <div id="panel-chat" class="panel">
+        <div class="card">
+            <div class="card-header">AI Suhbati</div>
+            <div class="chat-area" id="chat-area"></div>
+            <div class="input-row">
+                <input type="text" id="chat-inp" placeholder="Savolingizni yozing..." onkeydown="if(event.key==='Enter')sendChat()">
+                <button class="btn btn-main" onclick="sendChat()">Yuborish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let data = {
+        todos: [],
+        transactions: [],
+        notes: [],
+        tLeft: 1500,
+        tInterval: null,
+        tRunning: false
+    };
+
+    // Tab Navigation
+    function showTab(id, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // AI Helper function
+    function aiAction(type) {
+        const boxes = {
+            todo: "Vazifalaringizni tahlil qildim. Muhim ishni ertalab soat 10:00 gacha yakunlashni maslahat beraman.",
+            budget: "O'tgan haftaga qaraganda xarajatlaringiz me'yorda. Ko'proq oziq-ovqat xarajatlariga e'tibor bering.",
+            note: "Ushbu eslatmangiz juda muhim g'oyani o'z ichiga oladi. Uni loyiha rejasiga qo'shishni unutmang!"
+        };
+        const boxId = `ai-${type}-box`;
+        document.getElementById(boxId).innerHTML = `<div class="ai-box">✨ <b>AI Tavsiyasi:</b><br>${boxes[type]}</div>`;
+    }
+
+    // To-Do Logic
+    function addTodo() {
+        const inp = document.getElementById('todo-inp');
+        if(!inp.value.trim()) return;
+        data.todos.push({
+            id: Date.now(),
+            text: inp.value,
+            pri: document.getElementById('todo-pri').value,
+            done: false
+        });
+        inp.value = '';
+        renderTodos();
+    }
+
+    function renderTodos() {
+        const list = document.getElementById('todo-list');
+        if(!data.todos.length) { list.innerHTML = '<div class="empty">Hali vazifalar yo\'q</div>'; return; }
+        list.innerHTML = data.todos.map(t => `
+            <div class="list-item">
+                <div style="display:flex; align-items:center; gap:10px">
+                    <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo(${t.id})">
+                    <span style="${t.done?'text-decoration:line-through; color:gray':''}">${t.text}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px">
+                    <small style="color:var(--text-muted)">${t.pri}</small>
+                    <button class="btn-del" onclick="deleteTodo(${t.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function deleteTodo(id) { data.todos = data.todos.filter(t => t.id !== id); renderTodos(); }
+    function toggleTodo(id) { const t = data.todos.find(x => x.id === id); t.done = !t.done; renderTodos(); }
+
+    // Budget Logic
+    function addTrans() {
+        const name = document.getElementById('tr-name').value;
+        const amt = parseFloat(document.getElementById('tr-amt').value);
+        if(!name || !amt) return;
+        data.transactions.push({id: Date.now(), name, amt, type: document.getElementById('tr-type').value});
+        document.getElementById('tr-name').value = '';
+        document.getElementById('tr-amt').value = '';
+        renderTrans();
+    }
+
+    function renderTrans() {
+        const list = document.getElementById('trans-list');
+        let inc = 0, exp = 0;
+        list.innerHTML = data.transactions.map(t => {
+            if(t.type === 'income') inc += t.amt; else exp += t.amt;
+            return `
+                <div class="list-item">
+                    <span>${t.name}</span>
+                    <b style="color:${t.type==='income'?'var(--success)':'var(--danger)'}">
+                        ${t.type==='income'?'+':'-'}${t.amt.toLocaleString()}
+                    </b>
+                </div>
+            `;
+        }).join('');
+        document.getElementById('s-in').innerText = inc.toLocaleString();
+        document.getElementById('s-out').innerText = exp.toLocaleString();
+        document.getElementById('s-bal').innerText = (inc - exp).toLocaleString();
+    }
+
+    // Timer Logic
+    function updateDisp() {
+        let m = Math.floor(data.tLeft/60), s = data.tLeft%60;
+        document.getElementById('t-disp').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    function tStart() {
+        if(data.tRunning) return;
+        data.tRunning = true;
+        data.tInterval = setInterval(() => {
+            data.tLeft--;
+            updateDisp();
+            if(data.tLeft <= 0) { clearInterval(data.tInterval); alert("Vaqt tugadi!"); tReset(); }
+        }, 1000);
+    }
+    function tPause() { clearInterval(data.tInterval); data.tRunning = false; }
+    function tReset() {
+        tPause();
+        data.tLeft = (parseInt(document.getElementById('t-min').value)||0)*60 + (parseInt(document.getElementById('t-sec').value)||0);
+        updateDisp();
+    }
+
+    // Notes Logic
+    function addNote() {
+        const txt = document.getElementById('note-inp').value;
+        if(!txt.trim()) return;
+        data.notes.push({text: txt, date: new Date().toLocaleTimeString()});
+        document.getElementById('note-inp').value = '';
+        renderNotes();
+    }
+    function renderNotes() {
+        document.getElementById('notes-list').innerHTML = data.notes.map(n => `
+            <div class="card" style="padding:15px; margin-bottom:10px;">
+                <small style="color:var(--text-muted)">${n.date}</small>
+                <p style="margin-top:5px; font-size:14px;">${n.text}</p>
+            </div>
+        `).join('');
+    }
+
+    // Chat Logic
+    function sendChat() {
+        const inp = document.getElementById('chat-inp');
+        if(!inp.value.trim()) return;
+        const area = document.getElementById('chat-area');
+        area.innerHTML += `<div class="msg user">${inp.value}</div>`;
+        const userInp = inp.value;
+        inp.value = '';
+        setTimeout(() => {
+            area.innerHTML += `<div class="msg ai">Tushunarlik. "${userInp}" haqida ko'proq ma'lumot bera olasizmi? Men sizga yordam berishga tayyorman.</div>`;
+            area.scrollTop = area.scrollHeight;
+        }, 700);
+    }
+
+    // Initial setups
+    document.getElementById('t-min').addEventListener('input', tReset);
+    document.getElementById('t-sec').addEventListener('input', tReset);
+    renderTodos();
+    renderTrans();
+</script>
+
+</body>
+</html>
